@@ -1,0 +1,4 @@
+
+
+Goal:
+	Create an OpenGL Application in pure C without any libraries.
