@@ -7,20 +7,12 @@ layout(location = 2) in vec2 aTex;
 uniform mat4 transformation;
 uniform mat4 camMatrix;
 
-
-
-out DATA 
-{
-    vec3 Normal;
-    vec2 texCoord;
-    mat4 projection;
-} data_out;
-
+out vec3 Normal;
+out vec3 FragPos;
 
 void main(){
-    gl_Position = transformation * vec4(aPos, 1);
-    data_out.Normal = aNormal;
-    data_out.texCoord =   mat2(0, -1, 
-                                1, 0) * aTex; 
-    data_out.projection = camMatrix;
+    gl_Position = camMatrix * transformation * vec4(aPos, 1);
+    Normal = aNormal;
+    FragPos = vec3(gl_Position);
+
 }

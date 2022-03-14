@@ -1,12 +1,12 @@
 #include "framework.h"
 #include "resource.h"
 #include "utils.h"
-
+#include "CommandLine.h"
 #include "shader.h"
 
 
 LRESULT WINAPI wndProc(HWND, UINT, WPARAM, LPARAM);
-LRESULT WINAPI childWndProc(HWND, UINT, WPARAM, LPARAM);
+
 
 unsigned int width = 800;
 unsigned int height = 640;
@@ -59,7 +59,7 @@ int APIENTRY wWinMain(
 
 	/*Create Window*/
 	DWORD exStyle = 0L;
-	DWORD style = WS_OVERLAPPEDWINDOW;
+	DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
 	HWND hWindow = CreateWindowEx(exStyle, winClassName, title, style,
 		/*Begin Position*/
 		CW_USEDEFAULT, CW_USEDEFAULT,
@@ -118,56 +118,43 @@ int APIENTRY wWinMain(
 	buffer buffer = cdCreateBuffer(INITIAL_BUFFER_SIZE);
 
 
-	GLuint Shader;
 	/*init main OpenGL objects*/
-	//Shader = cdCreateShader("default.vert", "default.geom", "default.frag", &buffer);
+	GLuint Shader = cdCreateShader("default.vert", NULL, "default.frag", &buffer);
+
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 
 
 	/*Create Command bar*/
-	WCHAR childClassName = L"CommandParser";
-	DWORD childClassStyle = CS_VREDRAW | CS_HREDRAW;
-	WNDCLASSEX childWindClass = {
-		.cbSize = sizeof(WNDCLASSEX),
-	/* Win 3.x */
-		.style = childClassStyle,
-		.lpfnWndProc = childWndProc,
-		.cbClsExtra = 0,
-		.cbWndExtra = 0,
-		.hInstance = hInstance,
-		.hIcon = LoadIcon(NULL, IDI_ASTERISK),
-		.hCursor = LoadCursor(NULL,IDC_IBEAM),
-		.hbrBackground = (HBRUSH) COLOR_WINDOW+1,
-		.lpszMenuName = NULL,
-		.lpszClassName = childClassName,
-	/* Win 4.0 */
-		.hIconSm = LoadIcon(NULL,IDI_ASTERISK),
-	};
-	RegisterClassEx(&childWindClass);
-	DWORD exChildStyles = 0;
-	DWORD childStyles = 0;
-	HWND hCommandWindow = CreateWindowExW(exChildStyles, childClassName, L"CommandParser", childStyles,
-		//Position
-		0, 100,
-		//Size
-		width, 20,
-		hWindow, NULL, hInstance, NULL);
-
-
-
-
+	HWND hCommandWindow = createCommandLine(hInstance, hWindow);
+	
+	
 	ShowWindow(hWindow, nCmdShow);
 	ShowWindow(hCommandWindow, nCmdShow);
 	UpdateWindow(hWindow);
-	UpdateWindow(hCommandWindow, nCmdShow);
+	UpdateWindow(hCommandWindow);
+
+
+
 	MSG msg;
 	while (1) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 
-		//glUseProgram(Shader);
+		glUseProgram(Shader);
 
 
 
+		
 
 		SwapBuffers(hDC);
 		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)){
@@ -181,7 +168,7 @@ int APIENTRY wWinMain(
 SUCCESSFUL_EXIT:
 
 	cdRemoveAllResources();
-	//glDeleteShader(Shader);
+	glDeleteShader(Shader);
 	cdFreeBuffer(&buffer);
 
 	return 0;
@@ -208,8 +195,3 @@ LRESULT WINAPI wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-
-LRESULT WINAPI childWndProc(HWND hWindow, UINT uMsg, WPARAM wParam, LPARAM lParam) 
-{
-
-}
