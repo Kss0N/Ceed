@@ -5,8 +5,7 @@ out vec4 FragColor;
 
 
 in vec3 Normal;
-in vec2 TexCoord;
-in vec3 CrntPos;
+in vec3 FragPos;
 
 
 
@@ -17,14 +16,14 @@ uniform vec3 viewPos;
 
 
 void main(){
-    float ambientFactor = 0.5f;
-    vec3 viewDir = normalize(viewPos - CrntPos);
+    float ambient = 0.5f;
+    vec3 viewDir = normalize(viewPos - FragPos);
     vec3  norm   = normalize(Normal);
-    vec3  lgDir  = normalize(lgPos - CrntPos);
-    vec3  refDir = reflect(-lightDir, norm);
+    vec3  lgDir  = normalize(lgPos - FragPos);
+    vec3  refDir = reflect(-lgDir, norm);
     float diffse = max(dot(norm, lgDir), 0); /*Don't want "negative light"*/
     float speculr= pow(max(dot(viewDir, refDir), 0), 8);
 
-    
+    FragColor = (ambient+speculr+diffse) * vec4(0.5,0.5,0.5);
 
 }

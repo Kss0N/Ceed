@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CommandLine.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mesh.c" />
     <ClCompile Include="shader.c" />
@@ -156,6 +157,7 @@
     <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CommandLine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="linalg.h" />
     <ClInclude Include="mesh.h" />
